@@ -39,23 +39,9 @@ $suggestions = [
         'question' => 'Healthy breakfast ideas'
     ]
 ];
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($page_title); ?></title>
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>FoodBot</h1>
-            <p>Tell me what ingredients you have, and I'll help you cook something delicious!</p>
-        </header>
 
-        <!-- Prints out welcome message -->
+require_once __DIR__ . '/includes/header.php';
+?>
         <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot-message">
@@ -97,8 +83,9 @@ $suggestions = [
                 <?php endforeach; ?>
             </div>
         </div>
-    </div>
-
+    
     <script src="assets/js/script.js"></script>
-</body>
-</html>
+
+<?php
+    require_once __DIR__ . '/includes/footer.php';
+?>
