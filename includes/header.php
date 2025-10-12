@@ -11,8 +11,9 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
+
+<div class="container">
 <header>
     <h1>FoodBot</h1>
     <p>What’s cooking? Whatever FoodBot says of course!</p>
 </header>
-<div class="container">
