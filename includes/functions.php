@@ -1,4 +1,7 @@
 <?php
+// Include database connection
+require_once __DIR__ . '/../config/database.php';
+
 /** 
  * Sanitize user input for safe display and processing 
  */
@@ -37,4 +40,23 @@ function validate_ingredients($ingredients_string) {
         'ingredients' => $ingredients
     ];
 }
+
+// Save a chat message to the database
+function saveMessage($userInput, $botReply) {
+    global $conn;
+    $stmt = $conn->prepare("INSERT INTO messages (user_input, bot_reply) VALUES (:user_input, :bot_reply)");
+    $stmt->bindParam(':user_input', $userInput);
+    $stmt->bindParam(':bot_reply', $botReply);
+    $stmt->execute();
+}
+
+// Get the latest chat messages (for history display)
+function getMessages($limit = 20) {
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM messages ORDER BY created_at DESC LIMIT :limit");
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>

@@ -46,20 +46,37 @@ function getBotResponse(userMessage) {
 // Send message function
 function sendMessage() {
     const message = userInput.value.trim();
-    
     if (message === '') return;
-    
+
     // Add user message
     addMessage(message, true);
-    
+
     // Clear input
     userInput.value = '';
-    
-    // Simulate thinking time
+
+    // Send message to backend (PHP)
+    fetch("includes/chatHandler.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: message }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Add bot reply from PHP (server)
+        addMessage(data.reply, false);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        addMessage("⚠️ Something went wrong with the connection.", false);
+    });
+
+    // (Optional) Keep your local simulation for fallback or testing
+    /*
     setTimeout(() => {
         const botResponse = getBotResponse(message);
         addMessage(botResponse, false);
     }, 500);
+    */
 }
 
 // Event listeners
