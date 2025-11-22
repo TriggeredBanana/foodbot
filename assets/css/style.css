@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #fdbb07 0%, #ff9102 100%);
+    background: linear-gradient(135deg, #242424 0%, #3b3b3b 100%);
     min-height: 100vh;
     color: #333;
 }
@@ -17,6 +17,71 @@ body {
     margin: 0 auto;
     padding: 20px;
 }
+
+/* Navbar styles */
+.navbar {
+    background: rgba(36, 36, 36, 0.95);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-left a {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    background: none;
+    padding: 0;
+}
+
+.navbar-left a:hover {
+    color: #ff8c20;
+    background: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-links li a {
+    color: white;
+    background: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-links li a:hover {
+    background: rgba(255, 140, 32, 0.2);
+    color: #ff8c20;
+}
+
+.navbar-right {
+    text-decoration: none;
+    background: rgb(230, 34, 0);
+    padding: 10px;
+}
+
+.navbar-right:hover {
+    transition: all 0.3s ease;
+    background: rgba(206, 0, 0, 0.95);
+}
+
+.navbar-right a {
+    color: white;
+}
+
+a {
+    text-decoration: none;
+}
+
 
 /* Header styles */
 header {
@@ -31,7 +96,7 @@ header {
 header h1 {
     font-size: 3rem;
     margin-bottom: 10px;
-    background: linear-gradient(45deg, #ff6347, #ff8c00);
+    background: #242424;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -39,7 +104,23 @@ header h1 {
 
 header p {
     font-size: 1.2rem;
-    color: #666;
+    color: #4b4b4b;
+}
+
+h2 {
+    color: white;
+}
+
+p {
+    color: white;
+}
+
+.register {
+    color: white;
+}
+
+.login {
+    color: white;
 }
 
 /* Chat container */
@@ -160,6 +241,25 @@ header p {
     background: #ff9d26;
     color: white;
     transform: translateY(-2px);
+}
+
+/* Errors & informational messages */
+.error-message {
+    color: #ff0000;
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.info-message {
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
 }
 
 /* Responsive design */
