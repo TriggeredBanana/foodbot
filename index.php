@@ -7,6 +7,13 @@ require_once __DIR__ . '/includes/autoloader.php';
 require_once __DIR__ . '/config/constants.php';
 require_once __DIR__ . '/includes/functions.php';
 
+// Check if logged in
+if (!isset($_SESSION['username'])) {
+    $_SESSION['error'] = "You must be logged in to access that page.";
+    header("Location: auth.php");
+    exit;
+}
+
 // Initialize chatbot session if it does not exists
 if (!isset($_SESSION['chat_history'])) {
     $_SESSION['chat_history'] = [];
@@ -39,10 +46,28 @@ $suggestions = [
         'question' => 'Healthy breakfast ideas'
     ]
 ];
-
-require_once __DIR__ . '/includes/header.php';
 ?>
-        <div class="chat-container">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <center>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <a href="index.php">FoodBot</a>
+            </div>
+            <div class="navbar-right">
+                <a href="logout.php">Logout</a>
+            </div>
+        </nav>
+    </center>
+    <?php require_once __DIR__ . '/includes/header.php'; ?>
+    <div class="chat-container">
             <div class="chat-messages" id="chatMessages">
                 <div class="message bot-message">
                     <div class="message-content">
@@ -86,6 +111,8 @@ require_once __DIR__ . '/includes/header.php';
     
     <script src="assets/js/script.js"></script>
 
-<?php
-    require_once __DIR__ . '/includes/footer.php';
-?>
+    <?php
+        require_once __DIR__ . '/includes/footer.php';
+    ?>
+</body>
+</html>
