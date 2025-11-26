@@ -1,5 +1,9 @@
 <?php
 
+// This class handles all communication with the Spoonacular API.
+// It sends ingredient-based recipe requests and returns simplified recipe data.
+// Used by the chatbot to fetch real recipes from the internet.
+
 class RecipeAPI
 {
     // Base URL for the Spoonacular API
