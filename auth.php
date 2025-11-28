@@ -1,6 +1,7 @@
 <?php
     // Starter session som lagrer data i "$_SESSION"
     session_start();
+    require_once 'config/database.php';
 
     // Displays errors or info if any & removes them afterwards
     function print_message_helper($key, $class) {
@@ -8,17 +9,6 @@
             echo '<div class="' . $class . '">' . htmlspecialchars($_SESSION[$key]) . '</div>';
             unset($_SESSION[$key]);
         }
-    }
-    
-    // Connect to database
-    $db_host = "localhost";
-    $db_username = "root";
-    $db_password = "";
-    $db_name = "foodbot_db";
-
-    $conn = new mysqli($db_host, $db_username, $db_password, $db_name);
-    if ($conn->connect_error) {
-        die("Database connection failed: " . $conn->connect_error);
     }
 
     // Register user
@@ -30,25 +20,23 @@
 
         // Check if username already exists & add to database
         $get_username = $conn->prepare("SELECT id FROM users WHERE username = ?");
-        $get_username->bind_param("s", $new_username);
-        $get_username->execute();
-        $get_username->store_result();
+        $get_username->execute([$new_username]);
+        $existing = $get_username->fetch(PDO::FETCH_ASSOC);
 
-        if ($get_username->num_rows > 0) {
+        if ($existing !== false) {
             $_SESSION['username_taken'] = "Username is taken.";
         }
         else {
             $create_user = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-            $create_user->bind_param("ss", $new_username, $hashed_password);
-            if ($create_user->execute()) {
+            $success = $create_user->execute([$new_username, $hashed_password]);
+            
+            if ($success) {
                 $_SESSION['user_registered'] = "User registered!";
             }
             else {
                 $_SESSION['error_creating_user'] ="Something went wrong.";
             }
-            $create_user->close();
         }
-        $get_username->close();
     }
 
     // User login
@@ -58,11 +46,8 @@
 
         // Check failed login last hour
         $check_attempts = $conn->prepare("SELECT COUNT(*) FROM login_attempts WHERE username = ? AND attempt_time > (NOW() - INTERVAL 1 HOUR)");
-        $check_attempts->bind_param("s", $username);
-        $check_attempts->execute();
-        $check_attempts->bind_result($attempts);
-        $check_attempts->fetch();
-        $check_attempts->close();
+        $check_attempts->execute([$username]);
+        $attempts = (int)$check_attempts->fetchColumn();
 
         if ($attempts >= 3) {
             $_SESSION['failed_attempts'] = "Too many failed attempts. Try again in an hour.";
@@ -70,13 +55,14 @@
         else {
             // Get user data from database & verify against login information
             $get_user = $conn->prepare("SELECT id, username, password, usertype FROM users WHERE username = ?");
-            $get_user->bind_param("s", $username);
-            $get_user->execute();
-            $get_user->store_result();
+            $get_user->execute([$username]);
+            $row = $get_user->fetch(PDO::FETCH_ASSOC);
 
-            if ($get_user->num_rows() === 1) {
-                $get_user->bind_result($id, $db_username, $db_password, $usertype);
-                $get_user->fetch();
+            if ($row !== false) {
+                $id = $row['id'];
+                $db_username = $row['username'];
+                $db_password = $row['password'];
+                $usertype = $row['usertype'];
 
                 if (password_verify($password, $db_password)) {
                     session_regenerate_id(true); // Regenerate session ID (for security against hijackers)
@@ -85,16 +71,14 @@
                     $_SESSION['user_id'] = $id;
 
                     header("Location: index.php");
-
+                    exit;
                     // Commented out -> To be used for testing
                     // $_SESSION['login_message'] = "Logged in as $db_username ($usertype)";
                 }
                 else {
                     // Register failed attempts
                     $insert_attempt = $conn->prepare("INSERT INTO login_attempts (username) VALUES (?)");
-                    $insert_attempt->bind_param("s", $username);
-                    $insert_attempt->execute();
-                    $insert_attempt->close();
+                    $insert_attempt->execute([$username]);
 
                     $_SESSION['invalid_login'] = "Username or password is incorrect.";
                 }
@@ -102,7 +86,6 @@
             else {
                 $_SESSION['invalid_login'] = "Username or password is incorrect.";
             }
-            $get_user->close();
         }
     }
     
