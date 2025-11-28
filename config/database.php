@@ -1,13 +1,13 @@
 <?php
 
 // Database connection using PDO
-$host = "localhost";
-$dbname = "foodbot_db";
-$username = "root"; // default user in XAMPP
-$password = "";     // usually empty for local projects
+$db_host = "localhost";
+$db_name = "foodbot_db";
+$db_username = "root"; // Default user in XAMPP
+$db_password = "";     // Empty for local project
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $conn = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_username, $db_password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     // Optional: uncomment this line to confirm it works
     // echo "Database connected successfully!";
