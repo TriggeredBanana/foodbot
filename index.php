@@ -50,6 +50,8 @@ $suggestions = [
     ]
 ];
 
+$allowed_tags = '<strong><em><u><b><i><br><p>';
+
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
@@ -63,24 +65,19 @@ $suggestions = [
 
         <?php
             // Prints chat history inside the chat container
-            // Prints chat history inside the chat container
             foreach ($history as $chat) {
-
-                // Display user message (escape!)
+                // Display user message
                 echo '<div class="message user-message">';
-                echo '<div class="message-content">'
-                    . htmlspecialchars($chat['user_input'], ENT_QUOTES, 'UTF-8')
-                    . '</div>';
+                echo '<div class="message-content">' . htmlspecialchars($chat['user_input']) . '</div>';
                 echo '</div>';
 
-                // Display bot reply (keep HTML)
+                $sanitized_reply = strip_tags($chat['bot_reply'], $allowed_tags);
+
+                // Display bot reply
                 echo '<div class="message bot-message">';
-                echo '<div class="message-content">'
-                    . $chat['bot_reply']
-                    . '</div>';
-                echo '</div>';
+                echo '<div class="message-content">' . $sanitized_reply . '</div>';
+                echo '</div>'; 
             }
-
         ?>
     </div>
 
@@ -102,7 +99,6 @@ $suggestions = [
     </button>
     <?php endforeach; ?>
 </div>
-
 
 <script src="assets/js/script.js"></script>
 
