@@ -7,6 +7,5 @@
     // Sets max amount of ingredients that can be input by user
     define('MAX_INGREDIENTS', 30);
 
-    // Sets max amounts of recipes to be shown on each page
-    define('RECIPES_PER_PAGE', 12);
+    define('CHAT_HISTORY_LIMIT', 20);
 ?>
