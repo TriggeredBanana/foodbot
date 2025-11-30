@@ -10,8 +10,6 @@
         unset($_SESSION['user_id']);
     }
 
-    session_write_close(); // Saves session data and then closes
-
     header("Location: auth.php");
     exit;
 ?>
