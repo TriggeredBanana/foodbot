@@ -27,14 +27,17 @@ $data = json_decode($raw, true);
 
 // Validate input
 if (!isset($data['message']) || trim($data['message']) === '') {
-    echo json_encode([
-        "error" => "No message received."
-    ]);
+    echo json_encode(["error" => "No message received."]);
     exit;
 }
 
+// This is the raw text used by the ChatBot / Spoonacular (ingredients)
 $userMessage = trim($data['message']);
 
+// This is what the user should see in history (label or typed text)
+$displayText = isset($data['displayText']) && trim($data['displayText']) !== ''
+    ? trim($data['displayText'])
+    : $userMessage;
 
 // Validate ingredient count
 $validation = validate_ingredients($userMessage);
@@ -54,7 +57,7 @@ try {
     $reply = $chatbot->handleMessage($userMessage);
 
     // Save to database
-    saveMessage($userId, $userMessage, $reply);
+    saveMessage($userId, $displayText, $reply);
 
     // Return JSON response to JavaScript
     echo json_encode([

@@ -10,7 +10,7 @@ class ChatBot
     private ResponseFormatter $formatter;
     private AIProcessor $ai;
 
-    // The chatbot depends on RecipeAPI + ResponseFormatter
+    // The chatbot depends on RecipeAPI + ResponseFormatter + AIProcessor
     public function __construct(RecipeAPI $recipeApi, ResponseFormatter $formatter, AIProcessor $ai)
     {
         $this->recipeApi = $recipeApi;
@@ -24,7 +24,7 @@ class ChatBot
         // Trim the input
         $clean = trim($userMessage);
 
-        // Split ingredients on commas
+        // Extract ingredients from user message
         $ingredients = $this->extractIngredients($clean);
 
         // If nothing valid found
@@ -36,11 +36,12 @@ class ChatBot
             // Fetch recipes from the API
             $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
 
+            // If we found recipes, show list + AI tips
             if (!empty($recipes)) {
-                // Normal formatted list
+                // Normal formatted recipe list (with images + bold titles)
                 $recipeListText = $this->formatter->formatRecipeList($recipes);
             
-            // Build a short list of recipe titles for the AI prompt (max 3)
+                // Build a short list of recipe titles for the AI prompt (max 3)
                 $titles = [];
                 for ($i = 0; $i < count($recipes) && $i < 3; $i++) {
                     $titles[] = $recipes[$i]['title'] ?? 'Unknown title';
@@ -49,39 +50,36 @@ class ChatBot
                 // Ask Gemini for 2–3 short tips or comments
                 $prompt  = "The user has these ingredients: " . implode(', ', $ingredients) . ". ";
                 $prompt .= "We found these recipes: " . implode('; ', $titles) . ". ";
-                $prompt .= "Give 2-3 short tips or comments about these suggestions. ";
-                $prompt .= "Format the answer as a numbered list with line breaks. ";
+                $prompt .= "Give 2–3 short tips or comments about these suggestions. ";
+                $prompt .= "Format the answer as a numbered list (1., 2., 3.) with line breaks. ";
+                $prompt .= "Use **bold** only for recipe names or important phrases. ";
                 $prompt .= "Keep the answer friendly and easy to read.";
 
-
                 $aiText = $this->ai->generateText($prompt);
-
-                // Convert markdown bold (**text**) from AI to real <strong> tags
-                $aiText = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $aiText);
-
-                // Litt ekstra: legg linjeskift før hvert nummer hvis alt kommer i én blokk
-                $aiText = preg_replace('/\s*(\d+\.\s+)/', "<br><br>$1", $aiText);
-                $aiText = trim($aiText);
+                $aiText = $this->formatAiText($aiText);
 
                 // Return both: list + AI text under
                 return $recipeListText
-                . "\n\n"
-                . "<p><strong>Tips for these recipes:</strong></p>"
-                . $aiText;
-
+                    . "\n\n"
+                    . "<p><strong>Tips for these recipes:</strong></p>"
+                    . $aiText;
             }
-            
 
             // If no recipes were found, ask Gemini for ideas instead
             $prompt  = "The user has these ingredients: " . implode(', ', $ingredients) . ". ";
             $prompt .= "No exact recipes were found in the database. ";
             $prompt .= "Suggest 3-5 simple meal ideas that could work with these ingredients. ";
+            $prompt .= "Format the answer as a numbered list (1., 2., 3., ...) with each idea on its own line. ";
+            $prompt .= "Use **bold** for the meal titles. ";
             $prompt .= "Keep the answer short, clear and practical.";
 
-            return $this->ai->generateText($prompt);
+            $aiText = $this->ai->generateText($prompt);
+            $aiText = $this->formatAiText($aiText);
+
+            // Same look & feel as the recipe list block
+            return "<p><strong>Here are some simple ideas you can try:</strong></p>" . $aiText;
 
         } catch (RuntimeException $e) {
-
             // If something goes wrong during API calls
             return "Sorry, I had trouble fetching recipes. Error: " . $e->getMessage();
         }
@@ -102,5 +100,18 @@ class ChatBot
         }
 
         return $clean;
+    }
+
+    // Helper: format AI-generated text so it looks nice in the chat UI
+    private function formatAiText(string $text): string
+    {
+        // Convert markdown bold (**text**) to real <strong> tags
+        $text = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $text);
+
+        // Add line breaks before each numbered item (1., 2., 3., ...)
+        $text = preg_replace('/\s*(\d+\.\s+)/', "<br><br>$1", $text);
+
+        // Trim whitespace at the start and end
+        return trim($text);
     }
 }

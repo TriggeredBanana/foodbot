@@ -12,7 +12,6 @@ class ResponseFormatter
             return "I couldn't find any recipes with those ingredients.";
         }
 
-        // We keep using an array of lines and join them at the end
         $lines = [];
 
         // Header section
@@ -21,50 +20,33 @@ class ResponseFormatter
         // Limit how many recipes to show
         $max = min(3, count($recipes));
 
-        // Loop through the recipes and format each entry
+        // Loop through the recipes and format each entry (no images)
         for ($i = 0; $i < $max; $i++) {
             $r = $recipes[$i];
 
-            // Basic safety: escape user-controllable output
             $title = htmlspecialchars($r['title'] ?? 'Unknown title', ENT_QUOTES, 'UTF-8');
             $likes = (int)($r['likes'] ?? 0);
-            $image = isset($r['image'])
-                ? htmlspecialchars($r['image'], ENT_QUOTES, 'UTF-8')
-                : '';
-
             $number = $i + 1;
 
-            // Optional image output (only if the API provided one)
-            $imageHtml = '';
-            if ($image !== '') {
-                $imageHtml =
-                    "<img src=\"{$image}\" alt=\"{$title}\" " .
-                    "style=\"width:100%;max-width:260px;border-radius:10px;" .
-                    "display:block;margin-bottom:6px;\">";
-            }
+            // singular/plural
+            $likeWord = ($likes === 1) ? 'like' : 'likes';
 
-            // Build a formatted recipe block
-            $lines[] =
-                "<div class=\"recipe-item\" style=\"margin-bottom:12px;\">" .
-                    $imageHtml .
-                    "<div><strong>{$number}) {$title}</strong> — {$likes} likes</div>" .
-                "</div>";
+            // Example: "1) Spaghetti Bolognese — 12 likes"
+            $lines[] = $number . ") <strong>{$title}</strong> — {$likes} {$likeWord}";
         }
 
-        // Combine everything into a single HTML string
-        return implode("\n\n", $lines);
+        // Join with HTML line breaks so it renders nicely in the bubble
+        return implode("<br><br>", $lines);
     }
 
-    // Optional detailed formatter (not used yet)
+    // Optional detailed formatter (kept simple, no image handling)
     public function formatSingleRecipe(array $recipe): string
     {
         $title = $recipe['title'] ?? 'Unknown title';
-        $image = $recipe['image'] ?? '';
         $likes = $recipe['likes'] ?? 0;
 
         $text  = "Recipe: {$title}\n";
         $text .= "Likes: {$likes}\n";
-        $text .= "Image: {$image}\n";
 
         return $text;
     }

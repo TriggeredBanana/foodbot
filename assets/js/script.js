@@ -121,6 +121,49 @@ function sendMessage() {
     */
 }
 
+// Send a predefined suggestion:
+// displayText = what the user sees in the chat window
+// ingredients  = what we actually send to the backend / Spoonacular
+function sendPreset(displayText, ingredients) {
+    const message = ingredients.trim();
+    if (message === '') return;
+
+    // Show the nice label in the user bubble
+    addMessage(displayText, true);
+
+    userInput.value = '';
+    showTypingIndicator();
+
+    fetch("includes/chatHandler.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            message: message,          // used for Spoonacular
+            displayText: displayText   // used for chat history
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (typingMessage !== null) {
+            const contentDiv = typingMessage.querySelector('.message-content');
+            contentDiv.innerHTML = data.reply;
+            typingMessage.classList.remove('typing-indicator');
+            typingMessage = null;
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        if (typingMessage !== null) {
+            const contentDiv = typingMessage.querySelector('.message-content');
+            contentDiv.textContent = "⚠️ Something went wrong with the connection.";
+            typingMessage.classList.remove('typing-indicator');
+            typingMessage = null;
+        }
+    });
+}
+
+
+
 // Event listeners
 sendButton.addEventListener('click', sendMessage);
 
