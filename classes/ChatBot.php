@@ -24,11 +24,6 @@ class ChatBot
         // Trim the input
         $clean = trim($userMessage);
 
-        // If the user wrote nothing
-        if ($clean === '') {
-            return "Please write some ingredients, for example: chicken, rice, tomatoes.";
-        }
-
         // Split ingredients on commas
         $ingredients = $this->extractIngredients($clean);
 
@@ -39,7 +34,7 @@ class ChatBot
 
         try {
             // Fetch recipes from the API
-            $recipes = $this->recipeApi->searchByIngredients($ingredients, 3);
+            $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
 
             if (!empty($recipes)) {
                 // Normal formatted list
@@ -61,12 +56,19 @@ class ChatBot
 
                 $aiText = $this->ai->generateText($prompt);
 
-                // Liten ekstra safety: lag linjeskift før 1. / 2. / 3. hvis alt kommer i én lang streng
-                $aiText = preg_replace('/\s*(\d+\.\s+)/', "\n$1", $aiText);
+                // Convert markdown bold (**text**) from AI to real <strong> tags
+                $aiText = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $aiText);
+
+                // Litt ekstra: legg linjeskift før hvert nummer hvis alt kommer i én blokk
+                $aiText = preg_replace('/\s*(\d+\.\s+)/', "<br><br>$1", $aiText);
                 $aiText = trim($aiText);
 
                 // Return both: list + AI text under
-                return $recipeListText . "\n\n" . "Tips for these recipes:\n". $aiText;
+                return $recipeListText
+                . "\n\n"
+                . "<p><strong>Tips for these recipes:</strong></p>"
+                . $aiText;
+
             }
             
 

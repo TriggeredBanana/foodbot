@@ -12,6 +12,36 @@ const simpleResponses = {
     'breakfast': '🥞 Breakfast suggestions:\n• Pancakes\n• Oatmeal with fruits\n• Scrambled eggs and toast\n• Yogurt parfait'
 };
 
+let typingMessage = null;
+
+// Show "FoodBot is thinking..." bubble
+function showTypingIndicator() {
+    // If it already exists, do nothing
+    if (typingMessage !== null) return;
+
+    typingMessage = document.createElement('div');
+    typingMessage.className = 'message bot-message typing-indicator';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.textContent = 'FoodBot is thinking…';
+
+    typingMessage.appendChild(contentDiv);
+    chatMessages.appendChild(typingMessage);
+
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Remove the typing bubble
+function hideTypingIndicator() {
+    if (typingMessage !== null) {
+        chatMessages.removeChild(typingMessage);
+        typingMessage = null;
+    }
+}
+
+
 // Add message to chat
 function addMessage(content, isUser = false) {
     const messageDiv = document.createElement('div');
@@ -19,7 +49,11 @@ function addMessage(content, isUser = false) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
+    if (isUser) {
     contentDiv.textContent = content;
+    } else {
+        contentDiv.innerHTML = content;
+    }
     
     messageDiv.appendChild(contentDiv);
     chatMessages.appendChild(messageDiv);
@@ -54,6 +88,9 @@ function sendMessage() {
     // Clear input
     userInput.value = '';
 
+    // Show typing indicator while waiting for backend
+    showTypingIndicator();
+
     // Send message to backend (PHP)
     fetch("includes/chatHandler.php", {
         method: "POST",
@@ -62,9 +99,14 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => {
-        // Add bot reply from PHP (server)
-        addMessage(data.reply, false);
+         if (typingMessage !== null) {
+            const contentDiv = typingMessage.querySelector('.message-content');
+            contentDiv.innerHTML = data.reply;                 // put real reply here
+            typingMessage.classList.remove('typing-indicator'); // optional: remove special styling
+            typingMessage = null;                              // no longer a typing bubble
+        }
     })
+    
     .catch(error => {
         console.error("Error:", error);
         addMessage("⚠️ Something went wrong with the connection.", false);
