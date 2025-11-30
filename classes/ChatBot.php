@@ -8,12 +8,14 @@ class ChatBot
 {
     private RecipeAPI $recipeApi;
     private ResponseFormatter $formatter;
+    private AIProcessor $ai;
 
     // The chatbot depends on RecipeAPI + ResponseFormatter
-    public function __construct(RecipeAPI $recipeApi, ResponseFormatter $formatter)
+    public function __construct(RecipeAPI $recipeApi, ResponseFormatter $formatter, AIProcessor $ai)
     {
         $this->recipeApi = $recipeApi;
         $this->formatter = $formatter;
+        $this->ai = $ai;
     }
 
     // Main handler for user input
@@ -39,10 +41,16 @@ class ChatBot
             // Fetch recipes from the API
             $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
 
-            // Format the recipes into readable text
-            $formatted = $this->formatter->formatRecipeList($recipes);
+            if (!empty($recipes)) {
+                return $this->formatter->formatRecipeList($recipes);
+            }
 
-            return $formatted;
+            // If no recipes were found, ask Gemini for ideas instead
+            $prompt = "The user has these ingredients: " . implode(', ', $ingredients) . ". "
+                . "Suggest 3–5 simple meal ideas that could work with these ingredients. "
+                . "Keep the answer short and easy to read.";
+
+            return $this->ai->generateText($prompt);
 
         } catch (RuntimeException $e) {
 

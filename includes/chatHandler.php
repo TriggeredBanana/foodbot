@@ -27,7 +27,8 @@ $userMessage = trim($data['message']);
 // Create chatbot system (RecipeAPI + ResponseFormatter + ChatBot)
 $recipeApi   = new RecipeAPI(SPOONACULAR_API);
 $formatter   = new ResponseFormatter();
-$chatbot     = new ChatBot($recipeApi, $formatter);
+$ai          = new AIProcessor(GEMINI_API);
+$chatbot     = new ChatBot($recipeApi, $formatter, $ai);
 
 try {
     // Process user message
