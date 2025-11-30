@@ -4,11 +4,22 @@
 // formatted reply as JSON. This connects the front-end chat
 // interface with the back-end recipe/formatter system.
 
-ini_set('display_errors', 0);               // Avoid warnings breaking JSON output
-header('Content-Type: application/json');   // Tell the browser we return JSON
+session_start(); // Access session user id
 
-require_once __DIR__ . '/autoloader.php';   // Loads all classes
-require_once __DIR__ . '/../config/api_keys.php';  // Loads API keys
+ini_set('display_errors', 0);               // Avoid warnings breaking JSON output
+header('Content-Type: application/json');   // Tell the browser to return JSON
+
+require_once __DIR__ . '/autoloader.php';
+require_once __DIR__ . '/../config/api_keys.php';
+require_once __DIR__ . '/functions.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(["error" => "Not logged in."]); // Sends json error to script.js
+    exit;
+}
+
+$userId = $_SESSION['user_id'];
 
 // Read JSON sent from fetch() in script.js
 $raw = file_get_contents('php://input');
@@ -24,6 +35,14 @@ if (!isset($data['message']) || trim($data['message']) === '') {
 
 $userMessage = trim($data['message']);
 
+
+// Validate ingredient count
+$validation = validate_ingredients($userMessage);
+if (!$validation['valid']) {
+    echo json_encode(["error" => $validation['error']]);
+    exit;
+}
+
 // Create chatbot system (RecipeAPI + ResponseFormatter + ChatBot)
 $recipeApi   = new RecipeAPI(SPOONACULAR_API);
 $formatter   = new ResponseFormatter();
@@ -32,6 +51,9 @@ $chatbot     = new ChatBot($recipeApi, $formatter);
 try {
     // Process user message
     $reply = $chatbot->handleMessage($userMessage);
+
+    // Save to database
+    saveMessage($userId, $userMessage, $reply);
 
     // Return JSON response to JavaScript
     echo json_encode([

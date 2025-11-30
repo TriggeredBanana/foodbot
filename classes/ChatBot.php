@@ -37,7 +37,7 @@ class ChatBot
 
         try {
             // Fetch recipes from the API
-            $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
+            $recipes = $this->recipeApi->searchByIngredients($ingredients, 3);
 
             // Format the recipes into readable text
             $formatted = $this->formatter->formatRecipeList($recipes);

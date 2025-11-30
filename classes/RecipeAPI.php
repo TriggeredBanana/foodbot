@@ -19,7 +19,7 @@ class RecipeAPI
     }
 
     // Search for recipes based on a list of ingredients
-    public function searchByIngredients(array $ingredients, int $limit = 5): array
+    public function searchByIngredients(array $ingredients, int $limit = 3): array
     {
         // Clean the ingredient list
         $cleanIngredients = [];
