@@ -34,7 +34,7 @@ class ResponseFormatter
         }
 
         // Join all lines with line breaks so it becomes a readable block of text
-        return implode("\n", $lines);
+        return implode("<br><br>", $lines);
     }
 
     // Optionally: format one recipe in detail (not required yet)

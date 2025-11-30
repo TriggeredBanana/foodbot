@@ -42,13 +42,39 @@ class ChatBot
             $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
 
             if (!empty($recipes)) {
-                return $this->formatter->formatRecipeList($recipes);
+                // Normal formatted list
+                $recipeListText = $this->formatter->formatRecipeList($recipes);
+            
+            // Build a short list of recipe titles for the AI prompt (max 3)
+                $titles = [];
+                for ($i = 0; $i < count($recipes) && $i < 3; $i++) {
+                    $titles[] = $recipes[$i]['title'] ?? 'Unknown title';
+                }
+
+                // Ask Gemini for 2–3 short tips or comments
+                $prompt  = "The user has these ingredients: " . implode(', ', $ingredients) . ". ";
+                $prompt .= "We found these recipes: " . implode('; ', $titles) . ". ";
+                $prompt .= "Give 2-3 short tips or comments about these suggestions. ";
+                $prompt .= "Format the answer as a numbered list with line breaks. ";
+                $prompt .= "Keep the answer friendly and easy to read.";
+
+
+                $aiText = $this->ai->generateText($prompt);
+
+                // Liten ekstra safety: lag linjeskift før 1. / 2. / 3. hvis alt kommer i én lang streng
+                $aiText = preg_replace('/\s*(\d+\.\s+)/', "\n$1", $aiText);
+                $aiText = trim($aiText);
+
+                // Return both: list + AI text under
+                return $recipeListText . "\n\n" . "Tips for these recipes:\n". $aiText;
             }
+            
 
             // If no recipes were found, ask Gemini for ideas instead
-            $prompt = "The user has these ingredients: " . implode(', ', $ingredients) . ". "
-                . "Suggest 3–5 simple meal ideas that could work with these ingredients. "
-                . "Keep the answer short and easy to read.";
+            $prompt  = "The user has these ingredients: " . implode(', ', $ingredients) . ". ";
+            $prompt .= "No exact recipes were found in the database. ";
+            $prompt .= "Suggest 3-5 simple meal ideas that could work with these ingredients. ";
+            $prompt .= "Keep the answer short, clear and practical.";
 
             return $this->ai->generateText($prompt);
 
