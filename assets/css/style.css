@@ -147,6 +147,10 @@ p {
     display: flex;
 }
 
+.message-content {
+    white-space: pre-line;
+}
+
 .bot-message .message-content {
     background: linear-gradient(45deg, #0bae0b, #22bb22);
     color: white;
