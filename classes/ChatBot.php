@@ -25,7 +25,7 @@ class ChatBot
         $clean = trim($userMessage);
 
         // Extract ingredients from user message
-        $ingredients = $this->extractIngredients($clean);
+        $ingredients = $this->ai->extractIngredients($clean);
 
         // If nothing valid found
         if (empty($ingredients)) {
@@ -38,7 +38,7 @@ class ChatBot
 
             // If we found recipes, show list + AI tips
             if (!empty($recipes)) {
-                // Normal formatted recipe list (with images + bold titles)
+                // Normal formatted recipe list
                 $recipeListText = $this->formatter->formatRecipeList($recipes);
             
                 // Build a short list of recipe titles for the AI prompt (max 3)
@@ -59,10 +59,8 @@ class ChatBot
                 $aiText = $this->formatAiText($aiText);
 
                 // Return both: list + AI text under
-                return $recipeListText
-                    . "\n\n"
-                    . "<p><strong>Tips for these recipes:</strong></p>"
-                    . $aiText;
+                $linebreak = "<br><br>";
+                return $recipeListText . $linebreak . $aiText;
             }
 
             // If no recipes were found, ask Gemini for ideas instead
@@ -83,23 +81,6 @@ class ChatBot
             // If something goes wrong during API calls
             return "Sorry, I had trouble fetching recipes. Error: " . $e->getMessage();
         }
-    }
-
-    // Extract ingredients from a comma-separated string
-    private function extractIngredients(string $text): array
-    {
-        $parts = explode(',', $text);
-        $clean = [];
-
-        for ($i = 0; $i < count($parts); $i++) {
-            $item = trim($parts[$i]);
-
-            if ($item !== '') {
-                $clean[] = $item;
-            }
-        }
-
-        return $clean;
     }
 
     // Helper: format AI-generated text so it looks nice in the chat UI

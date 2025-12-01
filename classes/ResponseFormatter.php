@@ -32,7 +32,7 @@ class ResponseFormatter
             $likeWord = ($likes === 1) ? 'like' : 'likes';
 
             // Example: "1) Spaghetti Bolognese — 12 likes"
-            $lines[] = $number . ") <strong>{$title}</strong> — {$likes} {$likeWord}";
+            $lines[] = "<strong>{$title}</strong> — {$likes} {$likeWord}";
         }
 
         // Join with HTML line breaks so it renders nicely in the bubble
