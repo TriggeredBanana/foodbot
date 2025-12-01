@@ -55,7 +55,7 @@ $suggestions = [
                 <?php echo htmlspecialchars($welcome_message); ?>
             </div>
         </div>
-        
+
         <?php
             // Prints chat history inside the chat container
             foreach ($history as $chat) {
@@ -71,7 +71,7 @@ $suggestions = [
             }
         ?>
     </div>
-    
+
     <!-- User input -->
     <div class="input-container">
         <input type="text" id="userInput" placeholder="Type your ingredients here... (e.g., chicken, rice, tomatoes)" />
@@ -85,9 +85,10 @@ $suggestions = [
     <div class="suggestion-buttons">
         <!-- For each pre-defined suggestion it creates a button that "onClick" sends a question to the chatbot -->
         <?php foreach ($suggestions as $suggestion): ?>
-            <button class="suggestion-btn" onclick="askQuestion('<?php echo htmlspecialchars($suggestion['question'], ENT_QUOTES); ?>')">
-                <?php echo $suggestion['icon'] . ' ' . htmlspecialchars($suggestion['label']); ?>
-            </button>
+        <button class="suggestion-btn"
+            onclick="askQuestion('<?php echo htmlspecialchars($suggestion['question'], ENT_QUOTES); ?>')">
+            <?php echo $suggestion['icon'] . ' ' . htmlspecialchars($suggestion['label']); ?>
+        </button>
         <?php endforeach; ?>
     </div>
 </div>
