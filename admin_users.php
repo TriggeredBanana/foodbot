@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user_id'])) {
 
 // Fetch all users
 try {
-    $stmt = $conn->query("SELECT id, username, usertype, created_at FROM users ORDER BY id ASC");
+    $stmt = $conn->query("SELECT id, username, usertype, created_at FROM users WHERE usertype = 'user' ORDER BY id ASC");
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $users = [];
