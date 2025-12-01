@@ -50,7 +50,7 @@ $suggestions = [
     ]
 ];
 
-$allowed_tags = '<strong><em><u><b><i><br><p>';
+
 
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
@@ -71,13 +71,32 @@ $allowed_tags = '<strong><em><u><b><i><br><p>';
                 echo '<div class="message-content">' . htmlspecialchars($chat['user_input']) . '</div>';
                 echo '</div>';
 
-                $sanitized_reply = nl2br(htmlspecialchars($chat['bot_reply'], ENT_QUOTES, 'UTF-8'));
+                // Take raw bot reply
+                $bot_reply_raw = $chat['bot_reply'];
 
+                // Convert HTML line breaks / paragraphs to real line breaks
+                $bot_reply_raw = str_ireplace(
+                    ['<br>', '<br/>', '<br />'],
+                    "\n",
+                    $bot_reply_raw
+                );
+                $bot_reply_raw = str_ireplace(
+                    ['</p>', '</li>'],
+                    "\n\n",
+                    $bot_reply_raw
+                );
+
+                // Remove any remaining HTML tags
+                $bot_reply_text = strip_tags($bot_reply_raw);
+
+                // Escape safely and keep line breaks
+                $sanitized_reply = nl2br(htmlspecialchars($bot_reply_text, ENT_QUOTES, 'UTF-8'));
 
                 // Display bot reply
                 echo '<div class="message bot-message">';
                 echo '<div class="message-content">' . $sanitized_reply . '</div>';
-                echo '</div>'; 
+                echo '</div>';
+
             }
         ?>
     </div>
