@@ -2,14 +2,7 @@
     // Starter session som lagrer data i "$_SESSION"
     session_start();
     require_once 'config/database.php';
-
-    // Displays errors or info if any & removes them afterwards
-    function print_message_helper($key, $class) {
-        if (!empty($_SESSION[$key])) {
-            echo '<div class="' . $class . '">' . htmlspecialchars($_SESSION[$key]) . '</div>';
-            unset($_SESSION[$key]);
-        }
-    }
+    require_once 'includes/functions.php';
 
     // Register user
     if (isset($_POST['register'])) {
@@ -103,47 +96,47 @@
     <center>
         <nav class="navbar">
             <div class="navbar-left">
-            <a href="index.php">FoodBot</a>
-        </div>
+                <a href="index.php">FoodBot</a>
+            </div>
         </nav>
     </center>
     <br><br><br><br>
     <center>
-    <form action="#" method="POST">
-        <h2>Register</h2>
-        <div class="register">
-            <label>Username</label>
-            <input type="text" name="new_username" required>
-        </div>
+        <form action="#" method="POST">
+            <h2>Register</h2>
+            <div class="register">
+                <label>Username</label>
+                <input type="text" name="new_username" required>
+            </div>
 
-        <div class="register">
-            <label>Password</label>
-            <input type="password" name="new_password" required>
-        </div>
+            <div class="register">
+                <label>Password</label>
+                <input type="password" name="new_password" required>
+            </div>
 
-        <div>
-            <input type="submit" name="register" value="Register">
-        </div>
-    </form>
+            <div>
+                <input type="submit" name="register" value="Register">
+            </div>
+        </form>
     </center>
     <br><br><br><br><br>
     <center>
-    <form action="#" method="POST">
-        <h2>Login</h2>
-        <div class="login">
-            <label>Username</label>
-            <input type="text" name="username" required>
-        </div>
+        <form action="#" method="POST">
+            <h2>Login</h2>
+            <div class="login">
+                <label>Username</label>
+                <input type="text" name="username" required>
+            </div>
 
-        <div class="login">
-            <label>Password</label>
-            <input type="password" name="password" required>
-        </div>
+            <div class="login">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
 
-        <div>
-            <input type="submit" name="login" value="Login">
-        </div>
-    </form>
+            <div>
+                <input type="submit" name="login" value="Login">
+            </div>
+        </form>
     </center>
 
     <!-- Print out errors or informational messages -->

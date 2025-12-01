@@ -24,6 +24,13 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Require admin role
+if (!isset($_SESSION['usertype']) || $_SESSION['usertype'] !== 'admin') {
+    $_SESSION['error'] = "You do not have permission to access the admin page.";
+    header("Location: index.php");
+    exit;
+}
+
 $page_title = 'FoodBot - Admin - Users';
 
 // Handle delete request (POST → Redirect → GET)

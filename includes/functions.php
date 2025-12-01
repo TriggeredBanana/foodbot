@@ -62,4 +62,12 @@ function getMessages($userId, $limit = CHAT_HISTORY_LIMIT) {
     
 }
 
+    // Displays errors or info if any & removes them afterwards
+    function print_message_helper($key, $class) {
+        if (!empty($_SESSION[$key])) {
+            echo '<div class="' . $class . '">' . htmlspecialchars($_SESSION[$key]) . '</div>';
+            unset($_SESSION[$key]);
+        }
+    }
+
 ?>

@@ -122,6 +122,8 @@ $suggestions = [
 
 <script src="assets/js/script.js"></script>
 
+<?php print_message_helper('error', 'error-message') ?>
+
 <?php
     require_once __DIR__ . '/includes/footer.php';
 ?>

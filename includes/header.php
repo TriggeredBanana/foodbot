@@ -19,9 +19,10 @@
                 <a href="index.php">FoodBot</a>
             </div>
             <div class="navbar-right">
-                <a href="admin_users.php">Admin</a>
-            </div>
-            <div class="navbar-right">
+                <?php if (isset($_SESSION['usertype']) && $_SESSION['usertype'] === 'admin'): ?>
+                <a href="admin_users.php" style="margin-right: 30px;">Admin</a>
+                <?php endif; ?>
+
                 <a href="logout.php">Logout</a>
             </div>
 
