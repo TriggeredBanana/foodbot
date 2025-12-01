@@ -1,52 +1,52 @@
 <?php
-// This class converts raw recipe data from the API into readable text.
-// It formats lists of recipes into clean, user-friendly messages for the chatbot.
-// Makes API output easy to display in the chat interface.
+// This class converts raw recipe data from the API into clean,
+// user-friendly HTML that displays well inside the chat UI.
 
 class ResponseFormatter
 {
-    // Formats a list of recipes into readable text for the chatbot
+    // Formats a list of recipes into readable HTML for the chatbot
     public function formatRecipeList(array $recipes): string
     {
-        // If the API returned no results
+        // No results returned by the API
         if (empty($recipes)) {
             return "I couldn't find any recipes with those ingredients.";
         }
 
         $lines = [];
 
-        // Add a small header
-        $lines[] = "Here are some recipes you can try:";
+        // Header section
+        $lines[] = "<p><strong>Here are some recipes you can try:</strong></p>";
 
-        // Limit how many recipes we show (for a cleaner message)
+        // Limit how many recipes to show
         $max = min(3, count($recipes));
 
-        // Loop through each recipe and add a formatted line
+        // Loop through the recipes and format each entry (no images)
         for ($i = 0; $i < $max; $i++) {
             $r = $recipes[$i];
 
-            $title = $r['title'] ?? 'Unknown title';
-            $likes = $r['likes'] ?? 0;
-
-            // Example: "1) Chicken Alfredo — 2 likes"
+            $title = htmlspecialchars($r['title'] ?? 'Unknown title', ENT_QUOTES, 'UTF-8');
+            $likes = (int)($r['likes'] ?? 0);
             $number = $i + 1;
-            $lines[] = $number . ") " . $title . " — " . $likes . " likes";
+
+            // singular/plural
+            $likeWord = ($likes === 1) ? 'like' : 'likes';
+
+            // Example: "1) Spaghetti Bolognese — 12 likes"
+            $lines[] = $number . ") <strong>{$title}</strong> — {$likes} {$likeWord}";
         }
 
-        // Join all lines with line breaks so it becomes a readable block of text
-        return implode("\n", $lines);
+        // Join with HTML line breaks so it renders nicely in the bubble
+        return implode("<br><br>", $lines);
     }
 
-    // Optionally: format one recipe in detail (not required yet)
+    // Optional detailed formatter (kept simple, no image handling)
     public function formatSingleRecipe(array $recipe): string
     {
         $title = $recipe['title'] ?? 'Unknown title';
-        $image = $recipe['image'] ?? '';
         $likes = $recipe['likes'] ?? 0;
 
         $text  = "Recipe: {$title}\n";
         $text .= "Likes: {$likes}\n";
-        $text .= "Image: {$image}\n";
 
         return $text;
     }

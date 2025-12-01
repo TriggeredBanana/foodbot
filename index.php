@@ -27,24 +27,31 @@ $suggestions = [
     [
         'icon' => '🍗',
         'label' => 'Chicken & Rice',
-        'question' => 'What can I make with chicken and rice?'
+        'message' => 'What can I make with chicken and rice?',
+        'ingredients' => 'chicken, rice'
     ],
     [
         'icon' => '🥗',
         'label' => 'Vegetarian',
-        'question' => 'Vegetarian recipes please'
+        'message' => 'Could you give me some vegetarian suggestions?',
+        'ingredients' => 'tomato, zucchini, bell pepper'
     ],
     [
         'icon' => '⚡',
         'label' => 'Quick Meals',
-        'question' => 'Quick 15-minute meals'
+        'message' => 'What about quick meals?',
+        'ingredients' => 'egg, cheese, bread'
     ],
     [
         'icon' => '🥞',
         'label' => 'Breakfast',
-        'question' => 'Healthy breakfast ideas'
+        'message' => 'Any breakfast options?',
+        'ingredients' => 'eggs, oats, banana'
     ]
 ];
+
+$allowed_tags = '<strong><em><u><b><i><br><p>';
+
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
@@ -55,7 +62,7 @@ $suggestions = [
                 <?php echo htmlspecialchars($welcome_message); ?>
             </div>
         </div>
-        
+
         <?php
             // Prints chat history inside the chat container
             foreach ($history as $chat) {
@@ -64,14 +71,16 @@ $suggestions = [
                 echo '<div class="message-content">' . htmlspecialchars($chat['user_input']) . '</div>';
                 echo '</div>';
 
+                $sanitized_reply = strip_tags($chat['bot_reply'], $allowed_tags);
+
                 // Display bot reply
                 echo '<div class="message bot-message">';
-                echo '<div class="message-content">' . htmlspecialchars($chat['bot_reply']) . '</div>';
-                echo '</div>';
+                echo '<div class="message-content">' . $sanitized_reply . '</div>';
+                echo '</div>'; 
             }
         ?>
     </div>
-    
+
     <!-- User input -->
     <div class="input-container">
         <input type="text" id="userInput" placeholder="Type your ingredients here... (e.g., chicken, rice, tomatoes)" />
@@ -81,15 +90,14 @@ $suggestions = [
 
 <!-- Displays a pre-defined set of suggestions -->
 <div class="suggestions">
-    <h3>Quick suggestions:</h3>
-    <div class="suggestion-buttons">
-        <!-- For each pre-defined suggestion it creates a button that "onClick" sends a question to the chatbot -->
-        <?php foreach ($suggestions as $suggestion): ?>
-            <button class="suggestion-btn" onclick="askQuestion('<?php echo htmlspecialchars($suggestion['question'], ENT_QUOTES); ?>')">
-                <?php echo $suggestion['icon'] . ' ' . htmlspecialchars($suggestion['label']); ?>
-            </button>
-        <?php endforeach; ?>
-    </div>
+    <?php foreach ($suggestions as $suggestion): ?>
+    <button class="suggestion-btn" onclick="sendPreset(
+                '<?php echo htmlspecialchars($suggestion['message'], ENT_QUOTES); ?>',
+                '<?php echo htmlspecialchars($suggestion['ingredients'], ENT_QUOTES); ?>'
+            )">
+        <?php echo $suggestion['icon'] . ' ' . htmlspecialchars($suggestion['label']); ?>
+    </button>
+    <?php endforeach; ?>
 </div>
 
 <script src="assets/js/script.js"></script>
