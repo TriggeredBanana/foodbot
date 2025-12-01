@@ -34,7 +34,7 @@ class ChatBot
 
         try {
             // Fetch recipes from the API
-            $recipes = $this->recipeApi->searchByIngredients($ingredients, 5);
+            $recipes = $this->recipeApi->searchByIngredients($ingredients, 3);
 
             // If we found recipes, show list + AI tips
             if (!empty($recipes)) {
