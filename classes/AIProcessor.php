@@ -74,4 +74,24 @@ class AIProcessor
         // Fallback if the response did not contain the text we expected
         return "Sorry, the AI did not return a readable answer.";
     }
+
+    public function extractIngredients(string $userText): array
+    {
+        // Prompt for gemini AI
+        $prompt = "The user wrote: \"" . $userText . "\"\n\n" . "Your task: Extract ONLY the food ingredients from the text. Ignore all conversational words, return ONLY ingredient names separated by commas. Do NOT return full sentences or explanations.";
+
+        $response = $this->generateText($prompt);
+        $response = trim($response);
+        $ingredients = explode(',', $response);
+
+        $clean = [];
+        foreach($ingredients as $item) {
+            $item = trim($item);
+            if ($item !== '') {
+                $clean[] = $item;
+            }
+        }
+
+        return $clean;
+    }
 }
