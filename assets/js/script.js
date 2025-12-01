@@ -99,11 +99,17 @@ function sendMessage() {
     })
     .then(response => response.json())
     .then(data => {
-         if (typingMessage !== null) {
+        if (typingMessage !== null) {
             const contentDiv = typingMessage.querySelector('.message-content');
-            contentDiv.innerHTML = data.reply;                 // put real reply here
-            typingMessage.classList.remove('typing-indicator'); // optional: remove special styling
-            typingMessage = null;                              // no longer a typing bubble
+            
+            if (data.error) {
+                contentDiv.textContent = "⚠️ " + data.error; // Show an error to the user
+            }
+            else {
+                contentDiv.innerHTML = data.reply; // show recipe
+            }
+            typingMessage.classList.remove('typing-indicator');
+            typingMessage = null;  // no longer a typing bubble
         }
     })
     
@@ -112,7 +118,7 @@ function sendMessage() {
         addMessage("⚠️ Something went wrong with the connection.", false);
     });
 
-    // (Optional) Keep your local simulation for fallback or testing
+    // (Optional) Keep local simulation for fallback or testing
     /*
     setTimeout(() => {
         const botResponse = getBotResponse(message);
