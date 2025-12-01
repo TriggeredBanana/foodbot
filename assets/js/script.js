@@ -3,15 +3,6 @@ const chatMessages = document.getElementById('chatMessages');
 const userInput = document.getElementById('userInput');
 const sendButton = document.getElementById('sendButton');
 
-// Simple responses for demonstration (will be replaced with API calls later)
-const simpleResponses = {
-    'chicken': '🍗 Great choice! Here are some ideas with chicken:\n• Chicken stir-fry with vegetables\n• Grilled chicken breast\n• Chicken soup\n• Chicken curry',
-    'rice': '🍚 Rice is versatile! You could make:\n• Fried rice\n• Rice bowls\n• Risotto\n• Rice pudding',
-    'vegetarian': '🥗 Here are some vegetarian options:\n• Vegetable stir-fry\n• Pasta with marinara\n• Bean salad\n• Veggie burgers',
-    'quick': '⚡ Quick meal ideas:\n• Sandwiches\n• Instant noodles with vegetables\n• Scrambled eggs\n• Smoothie bowls',
-    'breakfast': '🥞 Breakfast suggestions:\n• Pancakes\n• Oatmeal with fruits\n• Scrambled eggs and toast\n• Yogurt parfait'
-};
-
 let typingMessage = null;
 
 // Show "FoodBot is thinking..." bubble
@@ -60,21 +51,6 @@ function addMessage(content, isUser = false) {
     
     // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// Get bot response (simple keyword matching for now)
-function getBotResponse(userMessage) {
-    const lowercaseMessage = userMessage.toLowerCase();
-    
-    // Check for keywords in the message
-    for (const [keyword, response] of Object.entries(simpleResponses)) {
-        if (lowercaseMessage.includes(keyword)) {
-            return response;
-        }
-    }
-    
-    // Default response if no keywords match
-    return "🤔 I'd love to help you cook! Try telling me about specific ingredients you have (like chicken, rice, vegetables) or what type of meal you're looking for (vegetarian, quick meals, breakfast, etc.).";
 }
 
 // Send message function
